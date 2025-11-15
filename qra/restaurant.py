@@ -118,6 +118,11 @@ class RestaurantQRAEngine:
         )
         state["vri"] = (1.0 - vol_norm) * 100.0
 
-        state["qra_health_score"] = compute_qra_health(state)
+        state["qra_health_score"] = compute_qra_health(
+            state,
+            w_epi=cfg.w_epi,
+            w_rsi=cfg.w_rsi,
+            w_vri=cfg.w_vri,
+        )
 
         return RestaurantQRAState(state_df=state)

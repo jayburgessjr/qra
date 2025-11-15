@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import numpy as np
@@ -24,7 +23,7 @@ def compute_pricing_elasticity(df: pd.DataFrame) -> pd.Series:
             elasticity = ((q2 - q1) / ((q1 + q2) / 2)) / ((p2 - p1) / ((p1 + p2) / 2))
         elasticities[org] = elasticity
         
-    return pd.Series(elasticities, name="pricing_elasticity")
+    return pd.Series(elasticities, name="pricing_elasticity").rename_axis("org_id")
 
 
 def compute_demand_velocity(df: pd.DataFrame) -> pd.Series:
@@ -53,7 +52,7 @@ def compute_retention_churn(df: pd.DataFrame) -> pd.Series:
         churn_rate = (initial_customers - final_customers) / initial_customers
         churn_rates[org] = churn_rate
         
-    return pd.Series(churn_rates, name="cohort_churn_rate")
+    return pd.Series(churn_rates, name="cohort_churn_rate").rename_axis("org_id")
 
 
 def compute_revenue_volatility(df: pd.DataFrame) -> pd.Series:
@@ -71,11 +70,17 @@ def minmax_normalize(
     return s_norm
 
 
-def compute_qra_health(state_df: pd.DataFrame) -> pd.Series:
+def compute_qra_health(
+    state_df: pd.DataFrame,
+    *,
+    w_epi: float,
+    w_rsi: float,
+    w_vri: float,
+) -> pd.Series:
     """Compute the QRA health score from normalized state metrics."""
     health_score = (
-        state_df["epi"] * state_df["w_epi"]
-        + state_df["rsi"] * state_df["w_rsi"]
-        + state_df["vri"] * state_df["w_vri"]
+        state_df["epi"] * w_epi
+        + state_df["rsi"] * w_rsi
+        + state_df["vri"] * w_vri
     )
     return health_score
