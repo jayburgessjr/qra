@@ -10,6 +10,72 @@ st.set_page_config(
     layout="wide",
 )
 
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+    :root {
+        --revuity-green: #004A2C;
+        --revuity-orange: #F56E0B;
+        --revuity-cream: #F4E7D9;
+        --revuity-text: #111827;
+    }
+
+    html, body, .stApp {
+        background-color: var(--revuity-cream);
+        color: var(--revuity-text);
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6, .stMarkdown h1, .stMarkdown h2 {
+        font-family: 'Montserrat', sans-serif;
+        color: var(--revuity-green);
+    }
+
+    div[data-testid="stSidebar"] {
+        background-color: #fff;
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .stButton>button {
+        background-color: var(--revuity-orange);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        font-weight: 600;
+    }
+
+    .stButton>button:hover {
+        background-color: #d95f09;
+        color: #fff;
+    }
+
+    .stDownloadButton>button {
+        border-color: var(--revuity-green);
+        color: var(--revuity-green);
+    }
+
+    .stDownloadButton>button:hover {
+        background-color: rgba(0, 74, 44, 0.1);
+        color: var(--revuity-green);
+    }
+
+    div[data-testid="stInfo"], div[data-testid="stSuccess"] {
+        background-color: #FFF5ED;
+        color: var(--revuity-text);
+        border-left: 4px solid var(--revuity-orange);
+    }
+
+    div[data-testid="stTable"] table {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.title("Revuity QRA Console")
 st.caption("Powered by the Quantum Revenue Algorithm – the decision engine behind Revuity Analytics.")
 
