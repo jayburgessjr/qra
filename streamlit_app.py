@@ -6,21 +6,36 @@ from qra.scenario import ScenarioConfig, project_baseline_gp, project_scenario_g
 
 
 st.set_page_config(
-    page_title="QRA Console",
+    page_title="Revuity QRA Console",
     layout="wide",
 )
 
-st.title("QRA Console")
-st.write(
-    "This application allows you to run the Quantum Revenue Algorithm (QRA) "
-    "to get health scores and profit scenarios for your organizations/locations."
-)
+st.title("Revuity QRA Console")
+st.caption("Powered by the Quantum Revenue Algorithm – the decision engine behind Revuity Analytics.")
+
+st.markdown("""
+This console runs Revuity's **Quantum Revenue Algorithm (QRA)** on your data.
+
+**Upload 4 CSVs with the following columns:**
+
+- **Pricing events**: `org_id, old_price, new_price, volume_before, volume_after`
+- **Funnel / demand**: `org_id, month, leads`
+- **Retention**: `org_id, cohort_month, months_since_acquisition, active_customers`
+- **Revenue**: `org_id, month, revenue`
+
+Then choose your assumptions (margin, horizon, ticket/retention changes) and click **Run QRA**.
+
+You'll get:
+
+- A **QRA State** table (health per org/location)
+- A **Scenario** table (baseline vs scenario 12-month gross profit and IGP)
+""")
+
 st.info(
-    "**How to use the app:**\n"
-    "1. Configure the QRA and scenario parameters in the sidebar on the left.\n"
-    "2. Upload your data using the file uploaders below.\n"
-    "3. Click the 'Run QRA' button to see the results."
+    "Want to try it quickly? Download sample CSVs from the QRA repo "
+    "and upload them here: https://github.com/jayburgessjr/qra/tree/main/examples/sample_restaurant"
 )
+
 
 
 
@@ -28,9 +43,6 @@ st.info(
 
 with st.sidebar:
     st.header("1️⃣ QRA Configuration")
-    st.info(
-        "These parameters control the QRA state calculation."
-    )
 
     horizon_months = st.slider(
         "Projection Horizon (months)",
@@ -38,7 +50,6 @@ with st.sidebar:
         max_value=36,
         value=12,
         step=3,
-        help="The number of months to project for the scenarios."
     )
     gross_margin = st.slider(
         "Gross Margin (%)",
@@ -46,20 +57,15 @@ with st.sidebar:
         max_value=90,
         value=65,
         step=5,
-        help="The gross margin of your business."
     ) / 100.0
 
     st.header("2️⃣ Scenario Configuration")
-    st.info(
-        "These parameters control the scenario projections."
-    )
     delta_ticket_pct = st.slider(
         "Ticket/Price Change (%)",
         min_value=-20,
         max_value=20,
         value=3,
         step=1,
-        help="The percentage change in ticket price for the scenario."
     ) / 100.0
     delta_retention_pct = st.slider(
         "Retention Change (%)",
@@ -67,7 +73,6 @@ with st.sidebar:
         max_value=10,
         value=2,
         step=1,
-        help="The percentage change in retention for the scenario."
     ) / 100.0
 
 
@@ -75,23 +80,18 @@ with st.sidebar:
 
 with st.expander("Upload Data", expanded=True):
     st.header("Upload Your Data")
-    st.info(
-        "Please upload four CSV files with the following columns:\n"
-        "- **Pricing events:** `org_id`, `old_price`, `new_price`, `volume_before`, `volume_after`\n"
-        "- **Funnel / demand:** `org_id`, `month`, `leads`\n"
-        "- **Retention:** `org_id`, `cohort_month`, `months_since_acquisition`, `active_customers`\n"
-        "- **Revenue:** `org_id`, `month`, `revenue`"
-    )
     col1, col2 = st.columns(2)
 
     with col1:
         pricing_file = st.file_uploader(
             "Pricing events CSV",
+            help="Required columns: org_id, old_price, new_price, volume_before, volume_after",
             type=["csv"],
             key="pricing",
         )
         funnel_file = st.file_uploader(
             "Funnel / demand CSV",
+            help="Required columns: org_id, month, leads",
             type=["csv"],
             key="funnel",
         )
@@ -99,11 +99,13 @@ with st.expander("Upload Data", expanded=True):
     with col2:
         retention_file = st.file_uploader(
             "Retention CSV",
+            help="Required columns: org_id, cohort_month, months_since_acquisition, active_customers",
             type=["csv"],
             key="retention",
         )
         revenue_file = st.file_uploader(
             "Revenue CSV",
+            help="Required columns: org_id, month, revenue",
             type=["csv"],
             key="revenue",
         )
@@ -176,14 +178,7 @@ if run_button:
 
         with tab1:
             st.header("QRA State (per org)")
-            st.info(
-                "The QRA State is a snapshot of the health of each organization/location. "
-                "It includes the following metrics:\n"
-                "- **EPI (Elasticity-Price Index):** A measure of how sensitive demand is to price changes.\n"
-                "- **RSI (Retention-Strength Index):** A measure of how well you are retaining your customers.\n"
-                "- **VRI (Volatility-Risk Index):** A measure of the volatility of your revenue.\n"
-                "- **QRA Health Score:** A weighted average of the EPI, RSI, and VRI."
-            )
+            st.caption("Includes EPI, RSI, VRI, and QRA Health Score.")
             st.dataframe(state_df, use_container_width=True)
             st.download_button(
                 "⬇️ Download QRA State CSV",
@@ -194,9 +189,8 @@ if run_button:
 
         with tab2:
             st.header("Scenario Results (per org)")
-            st.info(
-                "This tab shows the projected gross profit for the baseline and scenario cases, "
-                "as well as the incremental gross profit (IGP) over the next 12 months."
+            st.caption(
+                "Baseline vs scenario discounted 12-month gross profit and incremental gross profit (IGP)."
             )
             st.dataframe(scenarios_df, use_container_width=True)
             st.download_button(
@@ -205,4 +199,3 @@ if run_button:
                 file_name="qra_scenarios.csv",
                 mime="text/csv",
             )
-
