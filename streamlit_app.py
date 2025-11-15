@@ -36,6 +36,38 @@ st.info(
     "and upload them here: https://github.com/jayburgessjr/qra/tree/main/examples/sample_restaurant"
 )
 
+st.subheader("How to read the results")
+interpretation = pd.DataFrame(
+    [
+        {
+            "Metric": "QRA Health Score",
+            "Range": "0-100",
+            "Meaning": "Holistic score; >70 = strong, 40-70 = watchlist, <40 = critical",
+        },
+        {
+            "Metric": "EPI (Elasticity Performance Index)",
+            "Range": "0-100",
+            "Meaning": "Sensitivity to price changes; high = resilient demand",
+        },
+        {
+            "Metric": "RSI (Retention Strength Index)",
+            "Range": "0-100",
+            "Meaning": "Customer stickiness; high = strong cohort retention",
+        },
+        {
+            "Metric": "VRI (Volatility Risk Index)",
+            "Range": "0-100",
+            "Meaning": "Revenue stability; low volatility pushes VRI toward 100",
+        },
+        {
+            "Metric": "IGP 12M",
+            "Range": "Can be negative or positive",
+            "Meaning": "Incremental gross profit of the scenario vs baseline over 12 months",
+        },
+    ]
+)
+st.table(interpretation)
+
 
 
 
