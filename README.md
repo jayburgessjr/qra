@@ -16,6 +16,24 @@ in Python using Jupyter notebooks.
 
 This is designed to be run on Databricks, Fabric, or local Jupyter as a starting point.
 
+## QRA Algorithm Overview
+
+The QRA (Quantum Revenue Algorithm) is a framework for evaluating the health of a business and scoring potential actions. The algorithm consists of two main parts:
+
+### 1. QRA State Engine
+
+This engine calculates the "state" of a business by computing three key metrics:
+
+*   **EPI (Elasticity-Price Index):** Measures how sensitive demand is to price changes. A higher EPI indicates that demand is more sensitive to price changes.
+*   **RSI (Retention-Strength Index):** Measures customer retention. A higher RSI indicates that you are better at retaining your customers.
+*   **VRI (Volatility-Risk Index):** Measures the volatility of your revenue. A lower VRI indicates that your revenue is more stable.
+
+These three metrics are then combined into a single **QRA Health Score**, which provides a high-level overview of the health of the business.
+
+### 2. Scenario Projection
+
+This part of the algorithm projects the gross profit (GP) for a baseline and a scenario case. The scenario is defined by a percentage change in ticket price and retention. This allows you to see the potential impact of different actions on your bottom line.
+
 ## Usage
 
 To use the Streamlit app, follow these steps:
