@@ -10,84 +10,89 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("🧠 QRA Console")
+st.title("QRA Console")
 st.write(
-    "Upload your revenue data, run the Quantum Revenue Algorithm (QRA), "
-    "and get health scores and profit scenarios per org/location."
+    "This application allows you to run the Quantum Revenue Algorithm (QRA) "
+    "to get health scores and profit scenarios for your organizations/locations."
 )
 
 
-# ---------- 1. File uploads ----------
 
-st.header("1️⃣ Upload data")
+# ---------- Sidebar for configuration ----------
 
-col1, col2 = st.columns(2)
+with st.sidebar:
+    st.header("1️⃣ QRA Configuration")
 
-with col1:
-    pricing_file = st.file_uploader(
-        "Pricing events CSV\n\nRequired columns: org_id, old_price, new_price, volume_before, volume_after",
-        type=["csv"],
-        key="pricing",
-    )
-    funnel_file = st.file_uploader(
-        "Funnel / demand CSV\n\nRequired columns: org_id, month, leads",
-        type=["csv"],
-        key="funnel",
-    )
-
-with col2:
-    retention_file = st.file_uploader(
-        "Retention CSV\n\nRequired columns: org_id, cohort_month, months_since_acquisition, active_customers",
-        type=["csv"],
-        key="retention",
-    )
-    revenue_file = st.file_uploader(
-        "Revenue CSV\n\nRequired columns: org_id, month, revenue",
-        type=["csv"],
-        key="revenue",
-    )
-
-st.markdown("---")
-
-# ---------- 2. QRA config ----------
-
-st.header("2️⃣ QRA configuration")
-
-col_cfg1, col_cfg2 = st.columns(2)
-
-with col_cfg1:
     horizon_months = st.slider(
-        "Projection horizon (months)",
+        "Projection Horizon (months)",
         min_value=6,
         max_value=36,
         value=12,
         step=3,
     )
     gross_margin = st.slider(
-        "Gross margin (%)",
+        "Gross Margin (%)",
         min_value=10,
         max_value=90,
         value=65,
         step=5,
     ) / 100.0
 
-with col_cfg2:
+    st.header("2️⃣ Scenario Configuration")
     delta_ticket_pct = st.slider(
-        "Scenario: ticket / price change (%)",
+        "Ticket/Price Change (%)",
         min_value=-20,
         max_value=20,
         value=3,
         step=1,
     ) / 100.0
     delta_retention_pct = st.slider(
-        "Scenario: retention change (%)",
+        "Retention Change (%)",
         min_value=-10,
         max_value=10,
         value=2,
         step=1,
     ) / 100.0
 
+
+# ---------- 1. File uploads ----------
+
+with st.expander("Upload Data", expanded=True):
+    st.header("Upload Your Data")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        pricing_file = st.file_uploader(
+            "Pricing events CSV",
+            help="Required columns: org_id, old_price, new_price, volume_before, volume_after",
+            type=["csv"],
+            key="pricing",
+        )
+        funnel_file = st.file_uploader(
+            "Funnel / demand CSV",
+            help="Required columns: org_id, month, leads",
+            type=["csv"],
+            key="funnel",
+        )
+
+    with col2:
+        retention_file = st.file_uploader(
+            "Retention CSV",
+            help="Required columns: org_id, cohort_month, months_since_acquisition, active_customers",
+            type=["csv"],
+            key="retention",
+        )
+        revenue_file = st.file_uploader(
+            "Revenue CSV",
+            help="Required columns: org_id, month, revenue",
+            type=["csv"],
+            key="revenue",
+        )
+
+st.markdown("---")
+
 run_button = st.button("🚀 Run QRA")
+
 
 
 def load_csv(file):
@@ -147,28 +152,30 @@ if run_button:
 
         st.success("QRA run complete ✅")
 
-        # ---------- 4. Show state ----------
-        st.header("3️⃣ QRA State (per org)")
-        st.caption("Includes EPI, RSI, VRI, and QRA Health Score.")
-        st.dataframe(state_df, use_container_width=True)
+        # ---------- 4. Show results in tabs ----------
+        tab1, tab2 = st.tabs(["QRA State", "Scenario Results"])
 
-        st.download_button(
-            "⬇️ Download qra_state.csv",
-            data=state_df.to_csv(index=False),
-            file_name="qra_state.csv",
-            mime="text/csv",
-        )
+        with tab1:
+            st.header("QRA State (per org)")
+            st.caption("Includes EPI, RSI, VRI, and QRA Health Score.")
+            st.dataframe(state_df, use_container_width=True)
+            st.download_button(
+                "⬇️ Download QRA State CSV",
+                data=state_df.to_csv(index=False),
+                file_name="qra_state.csv",
+                mime="text/csv",
+            )
 
-        # ---------- 5. Show scenarios ----------
-        st.header("4️⃣ Scenario results (per org)")
-        st.caption(
-            "Baseline vs scenario discounted 12-month gross profit and incremental gross profit (IGP)."
-        )
-        st.dataframe(scenarios_df, use_container_width=True)
+        with tab2:
+            st.header("Scenario Results (per org)")
+            st.caption(
+                "Baseline vs scenario discounted 12-month gross profit and incremental gross profit (IGP)."
+            )
+            st.dataframe(scenarios_df, use_container_width=True)
+            st.download_button(
+                "⬇️ Download Scenario Results CSV",
+                data=scenarios_df.to_csv(index=False),
+                file_name="qra_scenarios.csv",
+                mime="text/csv",
+            )
 
-        st.download_button(
-            "⬇️ Download qra_scenarios.csv",
-            data=scenarios_df.to_csv(index=False),
-            file_name="qra_scenarios.csv",
-            mime="text/csv",
-        )
